@@ -1,103 +1,132 @@
+# Spam Classifier
 
-# Spam SMS Detection
-
-## 📝 Project Overview
-This is a simple web application built with Flask that classifies user-entered text messages into **Spam** or **Ham** (not spam) using a Logistic Regression model. It employs NLTK for text preprocessing (tokenization, stop-word removal, stemming) and scikit-learn's TF-IDF vectorizer for feature extraction.
+An NLP-based email/SMS spam classifier built with **Python, Flask, and Scikit-learn**. The model uses **Logistic Regression** trained on TF-IDF features, exposed through a lightweight web interface. The repository also includes the full Jupyter notebook pipeline for training from scratch.
 
 ---
 
-## 🎯 Objectives
-1. Provide a user-friendly web interface for entering SMS text.  
-2. Preprocess raw text (lowercasing, punctuation removal, stop-word filtering, stemming).  
-3. Transform text into TF-IDF features.  
-4. Predict Spam vs. Ham using a pretrained Logistic Regression model.  
-5. Display the classification result on the same page.
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Model Pipeline](#model-pipeline)
+- [Setup & Running](#setup--running)
+- [How It Works](#how-it-works)
 
 ---
 
-## 📁 Repository Structure
+## Overview
+
+Paste any text message or email content into the UI and the classifier instantly predicts whether it is **Spam** or **Ham (Not Spam)**. The pre-trained Logistic Regression model is loaded from a `.pkl` file and the TF-IDF vectorizer is applied before prediction.
+
+---
+
+## Features
+
+- Real-time spam/ham classification
+- Pre-trained Logistic Regression model (loaded from `logistic_regression_model.pkl`)
+- TF-IDF vectorizer (loaded from `tfidf_vectorizer.pkl`)
+- Full training notebook (`index.ipynb`) included
+- NLTK-based text preprocessing (lowercasing, punctuation removal, stopword removal, Porter stemming)
+- Flask web application with HTML frontend
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+|---|---|
+| Backend | Python, Flask |
+| ML Model | Logistic Regression (Scikit-learn) |
+| Text Features | TF-IDF Vectorizer |
+| NLP | NLTK (stopwords, PorterStemmer, word_tokenize) |
+| Frontend | HTML/CSS (Jinja2 templates) |
+
+---
+
+## Project Structure
+
 ```
-├── app.py
+Spam_Classifier/
+├── index.ipynb                      # Training notebook (data → model → evaluation)
+├── app.py                           # Flask web application
+├── logistic_regression_model.pkl    # Pre-trained Logistic Regression model
+├── tfidf_vectorizer.pkl              # Pre-fitted TF-IDF vectorizer
+├── requirements.txt                 # Python dependencies
 ├── templates/
-│   └── index.html
-├── static/
-│   └── styles.css
-├── logistic_regression_model.pkl
-├── tfidf_vectorizer.pkl
-├── requirements.txt
+│   └── index.html                   # Web UI
+├── static/                          # CSS / JS assets
 └── README.md
 ```
 
-- **app.py**: Main Flask application script.  
-- **templates/index.html**: Jinja2 template for the UI.  
-- **static/styles.css**: Styling for the web interface.  
-- **logistic_regression_model.pkl**: Serialized Logistic Regression model.  
-- **tfidf_vectorizer.pkl**: Serialized TF-IDF vectorizer.  
-- **requirements.txt**: Python dependencies.  
-- **README.md**: Project documentation.
+---
+
+## Model Pipeline
+
+The notebook `index.ipynb` covers:
+
+1. **Dataset loading** — labelled spam/ham messages
+2. **Text preprocessing:**
+   ```
+   Lowercase → Remove punctuation → Tokenize → Remove stopwords → Porter stemming → Re-join
+   ```
+3. **TF-IDF vectorization** — converts processed text to numeric feature vectors
+4. **Model training** — Logistic Regression classifier
+5. **Evaluation** — accuracy, confusion matrix, classification report
+6. **Model persistence** — saves `logistic_regression_model.pkl` and `tfidf_vectorizer.pkl`
 
 ---
 
-## 🚀 Getting Started
-Follow these steps to run the project locally:
+## Setup & Running
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/spam-sms-detection.git
-cd spam-sms-detection
-```
+### Prerequisites
 
-### 2. Create and activate a virtual environment
-```bash
-python3 -m venv venv
-source venv/bin/activate      # On Windows: venv\Scripts\activate
-```
+- Python 3.8+
+- pip
 
-### 3. Install dependencies
+### Install dependencies
+
 ```bash
+git clone https://github.com/jaideepj2004/Spam_Classifier.git
+cd Spam_Classifier
 pip install -r requirements.txt
 ```
 
-### 4. Download NLTK data
-```bash
-python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+### Download NLTK data (first run only)
+
+```python
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 ```
 
-### 5. Run the Flask app
+### Run the Flask app
+
 ```bash
 python app.py
 ```
 
-### 6. Access the app
-Open your browser and navigate to: `http://127.0.0.1:5000`
+Open `http://127.0.0.1:5000`.
 
 ---
 
-## ⚙️ Usage
-1. Enter any SMS text message in the input box.  
-2. Click **Predict**.  
-3. View the result (Spam or Ham) displayed below the form.
+## How It Works
+
+1. User types a message and submits the form.
+2. Flask receives the text via `POST /predict`.
+3. Pre-processing: lowercase → strip punctuation → remove stopwords → stem.
+4. Text is vectorized using the loaded TF-IDF vectorizer.
+5. Logistic Regression predicts `1` (Spam) or `0` (Ham).
+6. Result is displayed on the page.
 
 ---
 
-## 🛠️ Customization & Deployment
-- **Model Updates**: Retrain your model and vectorizer, then replace the `.pkl` files in the project root.  
-- **UI Tweaks**: Modify `templates/index.html` and `static/styles.css` for a different look.  
-- **Production Server**: Use **gunicorn** or **uwsgi** behind Nginx for deployment.  
-- **Docker**: Add a `Dockerfile` and `docker-compose.yml` to containerize the app.
+## Example
 
----
-
-## 📜 License
-This project is released under the [MIT License](LICENSE).
-
----
-
-## 👤 Author
-**Jaideep Jaiswal**  
-B.Tech  
-Contact: jaideepj2004@gmail.com  
-
-> 🚀 This repository is public and open-source — feel free to fork, clone, and contribute!
-```
-
+| Input | Prediction |
+|---|---|
+| "Win a free iPhone! Click now!" | **Spam** |
+| "Team meeting at 3pm tomorrow." | **Ham** |
+| "Claim your lottery prize — act fast!" | **Spam** |
+| "Please review the attached document." | **Ham** |
